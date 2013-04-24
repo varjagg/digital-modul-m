@@ -4,14 +4,15 @@
 #include <Bounce.h>
 
 // we use a 5 position selector knob, mapped to 5 inputs, to select camera ISO
-
 #define ISO_100  0
 #define ISO_200  1
 #define ISO_400  2
 #define ISO_800  3
 #define ISO_1600 4
 
-#define BTN_SHUTTER 24
+#define IN_FAP 25
+#define IN_SHUTTER 24
+#define BTN_SHUTTER 26
 
 // we drive the amputated 350D buttons from output pins
 #define BTN_ISO 23
@@ -21,6 +22,7 @@
 
 int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
+Bounce shutter = Bounce(IN_SHUTTER, 10);
 
 // ISO selection button sequence
 void iso_seq(int pos) {
@@ -53,9 +55,17 @@ void iso_seq(int pos) {
  
 }
 
+// camera firing sequence
+void shoot() {
+  digitalWrite(BTN_SHUTTER, HIGH);
+  while(!shutter.update())
+    delay(50);
+  digitalWrite(BTN_SHUTTER, LOW);
+}
+
 void setup() {
   //shutter release button
-  pinMode(BTN_SHUTTER, INPUT_PULLUP);
+  pinMode(IN_SHUTTER, INPUT_PULLUP);
   
   // set up the inputs from ISO knob
   for(int i=0; i<5; i++) {
@@ -71,4 +81,14 @@ void setup() {
 
 void loop() {
   
+  // fire the shutter if necessary
+  if(shutter.update() && shutter.fallingEdge())
+    shoot();
+    
+  // detect ISO knob action
+  for(int i = 0; i < 5; i++) {
+   if(buttons_deb[i]->update() && buttons_deb[i]->read() == LOW) {
+     iso_seq(i);
+   }
+  }
 }
