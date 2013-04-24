@@ -1,6 +1,7 @@
 // teensy++ code to control DIGITAL MODUL M:
 // a custom digital back for film Leica M bodies based on Canon EOS 350D
 
+#include <EEPROM.h>
 #include <Bounce.h>
 
 // we use a 5 position selector knob, mapped to 5 inputs, to select camera ISO
@@ -22,6 +23,13 @@
 #define BTN_DN  21
 #define BTN_SET 20
 
+// non-volatile ISO switch position storage
+#define ISO_ADDR 0
+
+// delay to simulate manual button operation
+#define KEYDAB 50
+
+int isopos;
 int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
 Bounce shutter = Bounce(IN_SHUTTER, 10);
@@ -30,7 +38,7 @@ Bounce shutter = Bounce(IN_SHUTTER, 10);
 void iso_seq(int pos) {
  int i;
  digitalWrite(BTN_ISO, HIGH);
- delay(50);
+ delay(KEYDAB);
  digitalWrite(BTN_ISO, LOW);
  
  // naiive but fool-proof and power-independent algorithm
@@ -39,20 +47,20 @@ void iso_seq(int pos) {
  // drive the cursor home
  for(i = 0; i < 4; i++) {
    digitalWrite(BTN_UP, HIGH);
-   delay(50);
+   delay(KEYDAB);
    digitalWrite(BTN_UP, LOW); 
-   delay(50);
+   delay(KEYDAB);
  }
  
  // set the supplied ISO
  for(i = 0; i < pos; i++) {
    digitalWrite(BTN_DN, HIGH);
-   delay(50);
+   delay(KEYDAB);
    digitalWrite(BTN_DN, LOW); 
-   delay(50);
+   delay(KEYDAB);
  }
  digitalWrite(BTN_SET, HIGH);
- delay(50);
+ delay(KEYDAB);
  digitalWrite(BTN_SET, LOW);
  
 }
@@ -61,18 +69,23 @@ void iso_seq(int pos) {
 void shoot() {
   digitalWrite(BTN_SHUTTER, HIGH);
   while(!shutter.update())
-    delay(50);
+    delay(KEYDAB);
   digitalWrite(BTN_SHUTTER, LOW);
 }
 
 void setup() {
+  //restore currently saved ISO switch value
+  isopos = EEPROM.read(ISO_ADDR);
+
   //shutter release button
   pinMode(IN_SHUTTER, INPUT_PULLUP);
   
-  // set up the inputs from ISO knob
+  // set up the inputs from ISO knob, and check if it matches saved ISO
   for(int i=0; i<5; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
     buttons_deb[i] = new Bounce(buttons[i], 10);
+    if(digitalRead(buttons[i] == LOW && isopos != i)
+       iso_seq(i);
   }
   
   pinMode(BTN_SHUTTER, OUTPUT);
