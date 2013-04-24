@@ -1,5 +1,5 @@
 // teensy++ code to control DIGITAL MODUL M:
-// a custom digital back for Leica M based on Canon EOS 350D
+// a custom digital back for film Leica M bodies based on Canon EOS 350D
 
 #include <Bounce.h>
 
@@ -10,7 +10,9 @@
 #define ISO_800  3
 #define ISO_1600 4
 
+// TODO: playback and zoom-in 100% while this button is held
 #define IN_FAP 25
+
 #define IN_SHUTTER 24
 #define BTN_SHUTTER 26
 
@@ -73,6 +75,7 @@ void setup() {
     buttons_deb[i] = new Bounce(buttons[i], 10);
   }
   
+  pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
   pinMode(BTN_DN, OUTPUT);
@@ -92,3 +95,4 @@ void loop() {
    }
   }
 }
+
