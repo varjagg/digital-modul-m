@@ -23,17 +23,33 @@ int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
 
 // ISO selection button sequence
-void iso_seq() {
+void iso_seq(int pos) {
+ int i;
  digitalWrite(BTN_ISO, HIGH);
  delay(50);
  digitalWrite(BTN_ISO, LOW);
  
- for(int i = 0; i < 4; i++) {
+ // naiive but fool-proof and power-independent algorithm
+ // can be optimized for faster operation via storing the current ISO
+ 
+ // drive the cursor home
+ for(i = 0; i < 4; i++) {
    digitalWrite(BTN_UP, HIGH);
    delay(50);
    digitalWrite(BTN_UP, LOW); 
    delay(50);
  }
+ 
+ // set the supplied ISO
+ for(i = 0; i < pos; i++) {
+   digitalWrite(BTN_DN, HIGH);
+   delay(50);
+   digitalWrite(BTN_DN, LOW); 
+   delay(50);
+ }
+ digitalWrite(BTN_SET, HIGH);
+ delay(50);
+ digitalWrite(BTN_SET, LOW);
  
 }
 
