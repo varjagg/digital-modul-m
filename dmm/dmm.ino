@@ -1,7 +1,6 @@
 // teensy++ code to control DIGITAL MODUL M:
 // a custom digital back for film Leica M bodies based on Canon EOS 350D
 
-#include <EEPROM.h>
 #include <Bounce.h>
 
 // we use a 5 position selector knob, mapped to 5 inputs, to select camera ISO
@@ -23,69 +22,60 @@
 #define BTN_DN  21
 #define BTN_SET 20
 
-// non-volatile ISO switch position storage
 #define ISO_ADDR 0
 
-// delay to simulate manual button operation
-#define KEYDAB 50
-
 int isopos;
+
 int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
 Bounce shutter = Bounce(IN_SHUTTER, 10);
 
 // ISO selection button sequence
 void iso_seq(int pos) {
- int i;
+  int dist, dir;
  digitalWrite(BTN_ISO, HIGH);
- delay(KEYDAB);
+ delay(50);
  digitalWrite(BTN_ISO, LOW);
  
- // naiive but fool-proof and power-independent algorithm
- // can be optimized for faster operation via storing the current ISO
- 
- // drive the cursor home
- for(i = 0; i < 4; i++) {
-   digitalWrite(BTN_UP, HIGH);
-   delay(KEYDAB);
-   digitalWrite(BTN_UP, LOW); 
-   delay(KEYDAB);
+ dist = pos - isopos;
+ dir = (dist >= 0 ? 1 : -1);
+ // drive the cursor to required position
+ for(dist = pos - isopos; pos != isopos; dist += dir) {
+   digitalWrite((dir > 0 ? BTN_DN : BTN_UP), HIGH);
+   delay(50);
+   digitalWrite((dir > 0 ? BTN_DN : BTN_UP), LOW); 
+   delay(50);
  }
  
- // set the supplied ISO
- for(i = 0; i < pos; i++) {
-   digitalWrite(BTN_DN, HIGH);
-   delay(KEYDAB);
-   digitalWrite(BTN_DN, LOW); 
-   delay(KEYDAB);
- }
  digitalWrite(BTN_SET, HIGH);
- delay(KEYDAB);
+ delay(50);
  digitalWrite(BTN_SET, LOW);
- 
+
+ EEPROM.write(ISO_ADDR, pos);
 }
 
 // camera firing sequence
 void shoot() {
   digitalWrite(BTN_SHUTTER, HIGH);
   while(!shutter.update())
-    delay(KEYDAB);
+    delay(50);
   digitalWrite(BTN_SHUTTER, LOW);
 }
 
 void setup() {
-  //restore currently saved ISO switch value
+  int i;
+
+  Serial.begin(9600);
+  
   isopos = EEPROM.read(ISO_ADDR);
 
   //shutter release button
   pinMode(IN_SHUTTER, INPUT_PULLUP);
   
-  // set up the inputs from ISO knob, and check if it matches saved ISO
-  for(int i=0; i<5; i++) {
+  // set up the inputs from ISO knob
+  for(i = 0; i < 5; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
     buttons_deb[i] = new Bounce(buttons[i], 10);
-    if(digitalRead(buttons[i] == LOW && isopos != i)
-       iso_seq(i);
   }
   
   pinMode(BTN_SHUTTER, OUTPUT);
@@ -93,6 +83,14 @@ void setup() {
   pinMode(BTN_UP, OUTPUT);
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
+  
+  // press SET 6 times in case Canon's CMOS was reset
+  for( i = 0; i < 6; i++) {
+    digitalWrite(BTN_SET, HIGH);
+    delay(KEYDAB);
+    digitalWrite(BTN_SET, LOW);
+    delay(KEYDAB);
+  }
 }
 
 void loop() {
