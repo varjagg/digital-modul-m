@@ -17,7 +17,7 @@
 #define BTN_SHUTTER 26
 
 // we drive the amputated 350D buttons from output pins
-#define BTN_ISO 23
+#define BTN_ISO 22
 #define BTN_UP  22
 #define BTN_DN  21
 #define BTN_SET 20
