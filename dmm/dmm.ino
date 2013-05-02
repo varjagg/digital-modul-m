@@ -30,26 +30,27 @@ int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
 Bounce shutter = Bounce(IN_SHUTTER, 10);
 
+// simulate a keypress action
+void click(pin) {
+ digitalWrite(pin, HIGH);
+ delay(50);
+ digitalWrite(pin, LOW);
+ delay(50);
+}
+
 // ISO selection button sequence
 void iso_seq(int pos) {
   int dist, dir;
- digitalWrite(BTN_ISO, HIGH);
- delay(50);
- digitalWrite(BTN_ISO, LOW);
+  click(BTN_ISO);
  
  dist = pos - isopos;
  dir = (dist >= 0 ? 1 : -1);
  // drive the cursor to required position
- for(dist = pos - isopos; pos != isopos; dist += dir) {
-   digitalWrite((dir > 0 ? BTN_DN : BTN_UP), HIGH);
-   delay(50);
-   digitalWrite((dir > 0 ? BTN_DN : BTN_UP), LOW); 
-   delay(50);
+ for(; pos != isopos; pos += dir) {
+   click(dir > 0 ? BTN_DN : BTN_UP);
  }
  
- digitalWrite(BTN_SET, HIGH);
- delay(50);
- digitalWrite(BTN_SET, LOW);
+ click(BTN_SET);
 
  EEPROM.write(ISO_ADDR, pos);
 }
@@ -60,6 +61,7 @@ void shoot() {
   while(!shutter.update())
     delay(50);
   digitalWrite(BTN_SHUTTER, LOW);
+  Serial.println("pew");
 }
 
 void setup() {
@@ -86,10 +88,7 @@ void setup() {
   
   // press SET 6 times in case Canon's CMOS was reset
   for( i = 0; i < 6; i++) {
-    digitalWrite(BTN_SET, HIGH);
-    delay(KEYDAB);
-    digitalWrite(BTN_SET, LOW);
-    delay(KEYDAB);
+    click(BTN_SET);
   }
 }
 
