@@ -58,7 +58,7 @@ void iso_seq(int pos) {
 
 // camera firing sequence
 void shoot() {
-  digitalWrite(PIN_D6, LOW); //LED 
+  digitalWrite(6, LOW); //LED 
   digitalWrite(BTN_SHUTTER, HIGH);
   while(!shutter.update())
     delay(50);
@@ -68,7 +68,8 @@ void shoot() {
 
 void setup() {
   int i;
-
+  pinMode(6, OUTPUT);
+  digitalWrite(6, HIGH);
   Serial.begin(9600);
   Serial.println("Init...");
   
