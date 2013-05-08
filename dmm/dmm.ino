@@ -2,6 +2,7 @@
 // a custom digital back for film Leica M bodies based on Canon EOS 350D
 
 #include <Bounce.h>
+#include <EEPROM.h>
 
 // we use a 5 position selector knob, mapped to 5 inputs, to select camera ISO
 #define ISO_100  0
@@ -31,7 +32,7 @@ Bounce *buttons_deb[5];
 Bounce shutter = Bounce(IN_SHUTTER, 10);
 
 // simulate a keypress action
-void click(pin) {
+void click(int pin) {
  digitalWrite(pin, HIGH);
  delay(50);
  digitalWrite(pin, LOW);
@@ -57,6 +58,7 @@ void iso_seq(int pos) {
 
 // camera firing sequence
 void shoot() {
+  digitalWrite(PIN_D6, LOW); //LED 
   digitalWrite(BTN_SHUTTER, HIGH);
   while(!shutter.update())
     delay(50);
@@ -68,6 +70,7 @@ void setup() {
   int i;
 
   Serial.begin(9600);
+  Serial.println("Init...");
   
   isopos = EEPROM.read(ISO_ADDR);
 
@@ -90,6 +93,8 @@ void setup() {
   for( i = 0; i < 6; i++) {
     click(BTN_SET);
   }
+  Serial.println("Initialized");
+
 }
 
 void loop() {
