@@ -23,6 +23,13 @@
 #define BTN_DN  21
 #define BTN_SET 20
 
+// we simulate the shutter curtain and mirror position sensors for the Canon
+#define SW_SHUTTER_COCKED 0
+#define SW_SHUTTER_CURTAIN1 1
+#define SW_SHUTTER_CURTAIN2 2
+#define SW_MIRROR_UP 3
+#define SW_MIRROR_DOWN 4
+
 #define ISO_ADDR 0
 
 int isopos;
@@ -58,12 +65,29 @@ void iso_seq(int pos) {
 
 // camera firing sequence
 void shoot() {
-  digitalWrite(6, LOW); //LED 
+  digitalWrite(6, LOW); //LED on
   digitalWrite(BTN_SHUTTER, HIGH);
   while(!shutter.update())
     delay(50);
   digitalWrite(BTN_SHUTTER, LOW);
   Serial.println("pew");
+  delay(50);
+  digitalWrite(SW_MIRROR_DOWN, LOW);
+  digitalWrite(SW_MIRROR_UP, HIGH);
+  digitalWrite(SW_SHUTTER_COCKED, LOW);
+  delay(10);
+  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  //Set mirror up and fire the 1st curtain
+  delay(500); // Canon's shutter is set to 1/2 sec
+  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  digitalWrite(SW_MIRROR_UP, LOW);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
+  delay(10);
+  digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
+  digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
+  digitalWrite(SW_SHUTTER_COCKED, HIGH);
+  digitalWrite(6, HIGH); //LED off
+  
 }
 
 void setup() {
@@ -89,6 +113,13 @@ void setup() {
   pinMode(BTN_UP, OUTPUT);
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
+
+  pinMode(SW_SHUTTER_COCKED, OUTPUT);
+  pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
+  pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
+  pinMode(SW_MIRROR_UP, OUTPUT);
+  pinMode(SW_MIRROR_DOWN, OUTPUT);
+
   
   // press SET 6 times in case Canon's CMOS was reset
   for( i = 0; i < 6; i++) {
