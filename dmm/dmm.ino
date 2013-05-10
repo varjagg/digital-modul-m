@@ -16,6 +16,7 @@
 
 #define IN_SHUTTER 24
 #define BTN_SHUTTER 26
+#define BTN_PRERELEASE 23
 
 // we drive the amputated 350D buttons from output pins
 #define BTN_ISO 22
@@ -36,14 +37,13 @@ int isopos;
 
 int buttons[5]={10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
-Bounce shutter = Bounce(IN_SHUTTER, 10);
 
 // simulate a keypress action
 void click(int pin) {
  digitalWrite(pin, HIGH);
- delay(50);
+ delay(20);
  digitalWrite(pin, LOW);
- delay(50);
+ delay(20);
 }
 
 // ISO selection button sequence
@@ -67,15 +67,11 @@ void iso_seq(int pos) {
 void shoot() {
   digitalWrite(6, LOW); //LED on
   digitalWrite(BTN_SHUTTER, HIGH);
-  while(!shutter.update())
-    delay(50);
-  digitalWrite(BTN_SHUTTER, LOW);
+  delay(15); // minimum trigger time
   Serial.println("pew");
-  delay(50);
   digitalWrite(SW_MIRROR_DOWN, LOW);
   digitalWrite(SW_MIRROR_UP, HIGH);
   digitalWrite(SW_SHUTTER_COCKED, LOW);
-  delay(10);
   digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
   //Set mirror up and fire the 1st curtain
   delay(500); // Canon's shutter is set to 1/2 sec
@@ -86,6 +82,8 @@ void shoot() {
   digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   digitalWrite(SW_SHUTTER_COCKED, HIGH);
+
+  digitalWrite(BTN_SHUTTER, LOW);
   digitalWrite(6, HIGH); //LED off
   
 }
@@ -109,6 +107,7 @@ void setup() {
   }
   
   pinMode(BTN_SHUTTER, OUTPUT);
+  pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
   pinMode(BTN_DN, OUTPUT);
@@ -125,6 +124,8 @@ void setup() {
   for( i = 0; i < 6; i++) {
     click(BTN_SET);
   }
+  delay(30);
+  digitalWrite(BTN_PRERELEASE, HIGH);
   Serial.println("Initialized");
 
 }
@@ -132,7 +133,7 @@ void setup() {
 void loop() {
   
   // fire the shutter if necessary
-  if(shutter.update() && shutter.fallingEdge())
+  if(digitalRead(IN_SHUTTER) == LOW)
     shoot();
     
   // detect ISO knob action
