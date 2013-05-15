@@ -25,7 +25,6 @@
 #define BTN_SET 20
 
 // we simulate the shutter curtain and mirror position sensors for the Canon
-#define SW_SHUTTER_COCKED 0
 #define SW_SHUTTER_CURTAIN1 1
 #define SW_SHUTTER_CURTAIN2 2
 #define SW_MIRROR_UP 3
@@ -35,32 +34,33 @@
 
 int isopos;
 
-int buttons[5]={10, 11, 12, 13, 14};
+int buttons[5]={
+  10, 11, 12, 13, 14};
 Bounce *buttons_deb[5];
 
 // simulate a keypress action
 void click(int pin) {
- digitalWrite(pin, HIGH);
- delay(20);
- digitalWrite(pin, LOW);
- delay(20);
+  digitalWrite(pin, HIGH);
+  delay(20);
+  digitalWrite(pin, LOW);
+  delay(20);
 }
 
 // ISO selection button sequence
 void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
- 
- dist = pos - isopos;
- dir = (dist >= 0 ? 1 : -1);
- // drive the cursor to required position
- for(; pos != isopos; pos += dir) {
-   click(dir > 0 ? BTN_DN : BTN_UP);
- }
- 
- click(BTN_SET);
 
- EEPROM.write(ISO_ADDR, pos);
+  dist = pos - isopos;
+  dir = (dist >= 0 ? 1 : -1);
+  // drive the cursor to required position
+  for(; pos != isopos; pos += dir) {
+    click(dir > 0 ? BTN_DN : BTN_UP);
+  }
+
+  click(BTN_SET);
+
+  EEPROM.write(ISO_ADDR, pos);
 }
 
 // camera firing sequence
@@ -71,21 +71,21 @@ void shoot() {
   Serial.println("pew");
   digitalWrite(SW_MIRROR_DOWN, LOW);
   digitalWrite(SW_MIRROR_UP, HIGH);
-  digitalWrite(SW_SHUTTER_COCKED, LOW);
   digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
   //Set mirror up and fire the 1st curtain
   delay(500); // Canon's shutter is set to 1/2 sec
   digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
-  digitalWrite(SW_MIRROR_UP, LOW);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
   delay(10);
+  digitalWrite(SW_MIRROR_UP, LOW);
+  delay(200);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
+  delay(20);
   digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
-  digitalWrite(SW_SHUTTER_COCKED, HIGH);
 
   digitalWrite(BTN_SHUTTER, LOW);
   digitalWrite(6, HIGH); //LED off
-  
+
 }
 
 void setup() {
@@ -94,18 +94,18 @@ void setup() {
   digitalWrite(6, HIGH);
   Serial.begin(9600);
   Serial.println("Init...");
-  
+
   isopos = EEPROM.read(ISO_ADDR);
 
   //shutter release button
   pinMode(IN_SHUTTER, INPUT_PULLUP);
-  
+
   // set up the inputs from ISO knob
   for(i = 0; i < 5; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
     buttons_deb[i] = new Bounce(buttons[i], 10);
   }
-  
+
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
@@ -113,13 +113,13 @@ void setup() {
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
-  pinMode(SW_SHUTTER_COCKED, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
-  
+
   // press SET 6 times in case Canon's CMOS was reset
   for( i = 0; i < 6; i++) {
     click(BTN_SET);
@@ -131,16 +131,17 @@ void setup() {
 }
 
 void loop() {
-  
+
   // fire the shutter if necessary
   if(digitalRead(IN_SHUTTER) == LOW)
     shoot();
-    
+
   // detect ISO knob action
   for(int i = 0; i < 5; i++) {
-   if(buttons_deb[i]->update() && buttons_deb[i]->read() == LOW) {
-     iso_seq(i);
-   }
+    if(buttons_deb[i]->update() && buttons_deb[i]->read() == LOW) {
+      iso_seq(i);
+    }
   }
 }
+
 
