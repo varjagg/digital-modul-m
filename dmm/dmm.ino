@@ -1,6 +1,5 @@
-// teensy++ code to control DIGITAL MODUL M:
+// Arduino Pro Mini code to control DIGITAL MODUL M:
 // a custom digital back for film Leica M bodies based on Canon EOS 350D
-
 #include <Bounce.h>
 #include <EEPROM.h>
 
@@ -9,34 +8,35 @@
 #define ISO_200  1
 #define ISO_400  2
 #define ISO_800  3
-#define ISO_1600 4
 
 // TODO: playback and zoom-in 100% while this button is held
-#define IN_FAP 25
+#define IN_FAP 0
 
-#define IN_SHUTTER 24
-#define BTN_SHUTTER 26
-#define BTN_PRERELEASE 23
+#define IN_SHUTTER 1
+#define BTN_SHUTTER 3
+#define BTN_PRERELEASE 2
 
 // we drive the amputated 350D buttons from output pins
-#define BTN_ISO 22
-#define BTN_UP  22
-#define BTN_DN  21
-#define BTN_SET 20
+#define BTN_ISO 8
+#define BTN_UP  8
+#define BTN_DN  9
+#define BTN_SET 10
+#define BTN_PLAY 11
+#define BTN_ZOOM_IN 12
 
 // we simulate the shutter curtain and mirror position sensors for the Canon
-#define SW_SHUTTER_CURTAIN1 1
-#define SW_SHUTTER_CURTAIN2 2
-#define SW_MIRROR_UP 3
-#define SW_MIRROR_DOWN 4
+#define SW_SHUTTER_CURTAIN1 A0
+#define SW_SHUTTER_CURTAIN2 A1
+#define SW_MIRROR_UP A2
+#define SW_MIRROR_DOWN A3
 
 #define ISO_ADDR 0
 
 int isopos;
 
-int buttons[5]={
-  10, 11, 12, 13, 14};
-Bounce *buttons_deb[5];
+int buttons[4]={
+  4, 5, 6, 7};
+Bounce *buttons_deb[4];
 
 // simulate a keypress action
 void click(int pin) {
@@ -65,7 +65,8 @@ void iso_seq(int pos) {
 
 // camera firing sequence
 void shoot() {
-  digitalWrite(6, LOW); //LED on
+
+  digitalWrite(13, LOW); //LED on
   digitalWrite(BTN_SHUTTER, HIGH);
   delay(15); // minimum trigger time
   Serial.println("pew");
@@ -84,14 +85,14 @@ void shoot() {
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
 
   digitalWrite(BTN_SHUTTER, LOW);
-  digitalWrite(6, HIGH); //LED off
+  digitalWrite(13, HIGH); //LED off
 
 }
 
 void setup() {
   int i;
-  pinMode(6, OUTPUT);
-  digitalWrite(6, HIGH);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
   Serial.begin(9600);
   Serial.println("Init...");
 
@@ -101,7 +102,7 @@ void setup() {
   pinMode(IN_SHUTTER, INPUT_PULLUP);
 
   // set up the inputs from ISO knob
-  for(i = 0; i < 5; i++) {
+  for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
     buttons_deb[i] = new Bounce(buttons[i], 10);
   }
@@ -131,17 +132,25 @@ void setup() {
 }
 
 void loop() {
-
+  int i, iso_changed;
+  
   // fire the shutter if necessary
   if(digitalRead(IN_SHUTTER) == LOW)
     shoot();
 
   // detect ISO knob action
-  for(int i = 0; i < 5; i++) {
-    if(buttons_deb[i]->update() && buttons_deb[i]->read() == LOW) {
-      iso_seq(i);
+  iso_changed = 0;
+  for(i = 0; i < 4; i++) {
+    if(buttons_deb[i]->update()) {
+       iso_changed = 1;
+       if(buttons_deb[i]->read() == LOW) {
+        iso_seq(i);
+        break;
+       }
     }
   }
+  if(iso_changed && i == 4)
+     iso_seq(4);
 }
 
 
