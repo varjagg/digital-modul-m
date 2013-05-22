@@ -10,9 +10,9 @@
 #define ISO_800  3
 
 // TODO: playback and zoom-in 100% while this button is held
-#define IN_FAP 0
+#define IN_FAP 12
 
-#define IN_SHUTTER 1
+#define IN_SHUTTER 11
 #define BTN_SHUTTER 3
 #define BTN_PRERELEASE 2
 
@@ -21,8 +21,8 @@
 #define BTN_UP  8
 #define BTN_DN  9
 #define BTN_SET 10
-#define BTN_PLAY 11
-#define BTN_ZOOM_IN 12
+#define BTN_PLAY A4
+#define BTN_ZOOM_IN A5
 
 // we simulate the shutter curtain and mirror position sensors for the Canon
 #define SW_SHUTTER_CURTAIN1 A0
@@ -66,7 +66,7 @@ void iso_seq(int pos) {
 // camera firing sequence
 void shoot() {
 
-  digitalWrite(13, LOW); //LED on
+  digitalWrite(13, HIGH); //LED on
   digitalWrite(BTN_SHUTTER, HIGH);
   delay(15); // minimum trigger time
   Serial.println("pew");
@@ -85,14 +85,14 @@ void shoot() {
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
 
   digitalWrite(BTN_SHUTTER, LOW);
-  digitalWrite(13, HIGH); //LED off
+  digitalWrite(13, LOW); //LED off
 
 }
 
 void setup() {
   int i;
   pinMode(13, OUTPUT);
-  digitalWrite(13, HIGH);
+  digitalWrite(13, LOW);
   Serial.begin(9600);
   Serial.println("Init...");
 
