@@ -38,6 +38,21 @@ int buttons[4]={
   4, 5, 6, 7};
 Bounce *buttons_deb[4];
 
+Bounce button_fap = Bounce(IN_FAP, 10);
+
+//zoom in the image to 100% center
+void pixelpeep() {
+  click(BTN_PLAY);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+  click(BTN_ZOOM_IN);
+}
+
 // simulate a keypress action
 void click(int pin) {
   digitalWrite(pin, HIGH);
@@ -67,9 +82,10 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
+  digitalWrite(BTN_PRERELEASE, HIGH);
   digitalWrite(BTN_SHUTTER, HIGH);
   delay(15); // minimum trigger time
-  //Serial.println("pew");
+
   digitalWrite(SW_MIRROR_DOWN, LOW);
   digitalWrite(SW_MIRROR_UP, HIGH);
   digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
@@ -85,6 +101,8 @@ void shoot() {
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
 
   digitalWrite(BTN_SHUTTER, LOW);
+  digitalWrite(BTN_PRERELEASE, LOW);
+
   digitalWrite(13, LOW); //LED off
 
 }
@@ -93,14 +111,15 @@ void setup() {
   int i;
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-  //Serial.begin(9600);
-  //Serial.println("Init...");
 
   isopos = EEPROM.read(ISO_ADDR);
 
-  //shutter release button
+  // shutter release button
   pinMode(IN_SHUTTER, INPUT_PULLUP);
-
+  
+  // fap button
+  pinMode(IN_FAP, INPUT_PULLUP);
+  
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
@@ -127,7 +146,6 @@ void setup() {
   }
   delay(30);
   digitalWrite(BTN_PRERELEASE, HIGH);
-  //Serial.println("Initialized");
 
 }
 
@@ -151,6 +169,9 @@ void loop() {
   }
   if(iso_changed && i == 4)
      iso_seq(4);
+     
+  if(button_fap.update() && button_fap.fallingEdge())
+    pixelpeep();
 }
 
 
