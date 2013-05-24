@@ -40,6 +40,14 @@ Bounce *buttons_deb[4];
 
 Bounce button_fap = Bounce(IN_FAP, 10);
 
+// blink the led once
+void blink() {
+  digitalWrite(13, HIGH);
+  delay(300);
+  digitalWrite(13, LOW);
+  delay(300);
+}
+
 // simulate a keypress action
 void click(int pin) {
   digitalWrite(pin, HIGH);
@@ -72,9 +80,10 @@ void iso_seq(int pos) {
   for(; pos != isopos; pos += dir) {
     click(dir > 0 ? BTN_DN : BTN_UP);
   }
-
   click(BTN_SET);
 
+  for(int i = 0; i <=pos; i++)
+    blink();
   EEPROM.write(ISO_ADDR, pos);
 }
 
@@ -123,7 +132,7 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 10);
+    buttons_deb[i] = new Bounce(buttons[i], 300);
   }
 
   pinMode(BTN_SHUTTER, OUTPUT);
