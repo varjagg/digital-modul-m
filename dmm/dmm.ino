@@ -3,7 +3,7 @@
 #include <Bounce.h>
 #include <EEPROM.h>
 
-// we use a 5 position selector knob, mapped to 5 inputs, to select camera ISO
+// we use a 4 position selector knob, mapped to 4 inputs, to select camera ISO
 #define ISO_100  0
 #define ISO_200  1
 #define ISO_400  2
@@ -40,6 +40,14 @@ Bounce *buttons_deb[4];
 
 Bounce button_fap = Bounce(IN_FAP, 10);
 
+// simulate a keypress action
+void click(int pin) {
+  digitalWrite(pin, HIGH);
+  delay(20);
+  digitalWrite(pin, LOW);
+  delay(20);
+}
+
 //zoom in the image to 100% center
 void pixelpeep() {
   click(BTN_PLAY);
@@ -51,14 +59,6 @@ void pixelpeep() {
   click(BTN_ZOOM_IN);
   click(BTN_ZOOM_IN);
   click(BTN_ZOOM_IN);
-}
-
-// simulate a keypress action
-void click(int pin) {
-  digitalWrite(pin, HIGH);
-  delay(20);
-  digitalWrite(pin, LOW);
-  delay(20);
 }
 
 // ISO selection button sequence
