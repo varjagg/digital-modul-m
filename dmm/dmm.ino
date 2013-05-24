@@ -80,12 +80,12 @@ void iso_seq(int pos) {
   dist = pos - isopos;
   dir = (dist >= 0 ? 1 : -1);
   // drive the cursor to required position
-  for(; pos != isopos; pos += dir) {
+  for(; pos != isopos; isopos += dir) {
     click(dir > 0 ? BTN_DN : BTN_UP);
   }
   click(BTN_SET);
 
-  EEPROM.write(ISO_ADDR, pos);
+  EEPROM.write(ISO_ADDR, isopos);
 }
 
 // camera firing sequence
