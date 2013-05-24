@@ -43,9 +43,9 @@ Bounce button_fap = Bounce(IN_FAP, 10);
 // blink the led once
 void blink() {
   digitalWrite(13, HIGH);
-  delay(300);
+  delay(100);
   digitalWrite(13, LOW);
-  delay(300);
+  delay(100);
 }
 
 // simulate a keypress action
@@ -74,6 +74,9 @@ void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
 
+   for(int i = 0; i <=isopos; i++)
+    blink();
+
   dist = pos - isopos;
   dir = (dist >= 0 ? 1 : -1);
   // drive the cursor to required position
@@ -82,8 +85,6 @@ void iso_seq(int pos) {
   }
   click(BTN_SET);
 
-  for(int i = 0; i <=pos; i++)
-    blink();
   EEPROM.write(ISO_ADDR, pos);
 }
 
@@ -121,6 +122,8 @@ void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
 
+  EEPROM.write(ISO_ADDR, 0);
+
   isopos = EEPROM.read(ISO_ADDR);
 
   // shutter release button
@@ -132,7 +135,7 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 300);
+    buttons_deb[i] = new Bounce(buttons[i], 30);
   }
 
   pinMode(BTN_SHUTTER, OUTPUT);
@@ -170,7 +173,7 @@ void loop() {
   for(i = 0; i < 4; i++) {
     if(buttons_deb[i]->update()) {
        iso_changed = 1;
-       if(buttons_deb[i]->read() == LOW) {
+       if(buttons_deb[i]->fallingEdge()) {
         iso_seq(i);
         break;
        }
@@ -179,8 +182,10 @@ void loop() {
   if(iso_changed && i == 4)
      iso_seq(4);
      
-  if(button_fap.update() && button_fap.fallingEdge())
+  if(button_fap.update() && button_fap.fallingEdge()) {
+    blink();
     pixelpeep();
+  }
 }
 
 
