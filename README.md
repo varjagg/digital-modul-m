@@ -8,3 +8,5 @@ Handles shutter release and ISO selection sequence via a 5 position rotary switc
 Handles shutter release from Leica via M Sync (flashbulb) terminal and triggers shutter release on the Canon.
 
 Emulates phantom limbs of the Canon (feedback from shutter and mirror position sensors).
+
+Still work in progress!
