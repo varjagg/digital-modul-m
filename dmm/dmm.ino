@@ -92,11 +92,11 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
-  digitalWrite(BTN_PRERELEASE, HIGH);
   digitalWrite(BTN_SHUTTER, HIGH);
-  delay(15); // minimum trigger time
+  delay(25); // minimum trigger time
 
   digitalWrite(SW_MIRROR_DOWN, LOW);
+  delay(10);
   digitalWrite(SW_MIRROR_UP, HIGH);
   digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
   //Set mirror up and fire the 1st curtain
@@ -104,7 +104,7 @@ void shoot() {
   digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
   delay(10);
   digitalWrite(SW_MIRROR_UP, LOW);
-  delay(200);
+  delay(80);
   digitalWrite(SW_MIRROR_DOWN, HIGH);
   delay(20);
   digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
@@ -145,9 +145,12 @@ void setup() {
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
+  digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
+  digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
   digitalWrite(SW_MIRROR_DOWN, HIGH);
+  digitalWrite(SW_MIRROR_UP, LOW);
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
