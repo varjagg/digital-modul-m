@@ -38,7 +38,7 @@ int buttons[4]={
   4, 5, 6, 7};
 Bounce *buttons_deb[4];
 
-Bounce button_fap = Bounce(IN_FAP, 10);
+Bounce button_fap = Bounce(IN_FAP, 15);
 
 // blink the led once
 void blink() {
@@ -135,7 +135,7 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 30);
+    buttons_deb[i] = new Bounce(buttons[i], 200);
   }
 
   pinMode(BTN_SHUTTER, OUTPUT);
@@ -152,6 +152,8 @@ void setup() {
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
 
+  // delay to let the camera warm up
+  delay(250);
   // press SET 6 times in case Canon's CMOS was reset
   for( i = 0; i < 6; i++) {
     click(BTN_SET);
