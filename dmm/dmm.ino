@@ -105,10 +105,9 @@ void shoot() {
   delay(10);
   digitalWrite(SW_MIRROR_UP, LOW);
   delay(80);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
-  delay(20);
   digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
 
   digitalWrite(BTN_SHUTTER, LOW);
   digitalWrite(BTN_PRERELEASE, LOW);
