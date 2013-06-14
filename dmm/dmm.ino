@@ -14,6 +14,7 @@
 
 #define IN_SHUTTER 1
 #define BTN_SHUTTER 3
+#define BTN_PRERELEASE A4
 #define SW_MYSTERY 2
 
 // we drive the amputated 350D buttons from output pins
@@ -92,16 +93,20 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
+  digitalWrite(BTN_PRERELEASE, HIGH); // activates camera cycle
+  delay(5);
   digitalWrite(BTN_SHUTTER, HIGH);
-  delay(25); // minimum trigger time
+  delay(15); // minimum trigger time
 
   digitalWrite(SW_MIRROR_DOWN, LOW);
   delay(30);
   digitalWrite(SW_MIRROR_UP, HIGH);
   digitalWrite(BTN_SHUTTER, LOW);
+  delay(15);
+  digitalWrite(BTN_PRERELEASE, LOW);
   //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   //Set mirror up and fire the 1st curtain
-  delay(575); // Canon's shutter is set to 1/2 sec
+  delay(560); // Canon's shutter is set to 1/2 sec
   //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   delay(10);
   digitalWrite(SW_MIRROR_UP, LOW);
@@ -140,6 +145,7 @@ void setup() {
   }
 
   pinMode(BTN_SHUTTER, OUTPUT);
+  pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(SW_MYSTERY, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
@@ -155,9 +161,6 @@ void setup() {
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
-  //debug mirror emulation disable
-  //digitalWrite(SW_MIRROR_DOWN, LOW);
-
   // delay to let the camera warm up
   delay(250);
   // press SET 6 times in case Canon's CMOS was reset
@@ -166,7 +169,7 @@ void setup() {
   }
   delay(30);
   digitalWrite(SW_MYSTERY, LOW);
-
+  digitalWrite(BTN_PRERELEASE, LOW);
 }
 
 void loop() {
