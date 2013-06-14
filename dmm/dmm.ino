@@ -14,7 +14,7 @@
 
 #define IN_SHUTTER 1
 #define BTN_SHUTTER 3
-#define BTN_PRERELEASE 2
+#define SW_MYSTERY 2
 
 // we drive the amputated 350D buttons from output pins
 #define BTN_ISO 8
@@ -96,21 +96,23 @@ void shoot() {
   delay(25); // minimum trigger time
 
   digitalWrite(SW_MIRROR_DOWN, LOW);
-  delay(10);
+  delay(30);
   digitalWrite(SW_MIRROR_UP, HIGH);
-  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  digitalWrite(BTN_SHUTTER, LOW);
+  //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   //Set mirror up and fire the 1st curtain
-  delay(500); // Canon's shutter is set to 1/2 sec
-  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  delay(575); // Canon's shutter is set to 1/2 sec
+  //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   delay(10);
   digitalWrite(SW_MIRROR_UP, LOW);
-  delay(80);
-  digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
-  digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
+  delay(50);
+  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  digitalWrite(SW_MYSTERY, HIGH);
+  delay(40);
+  digitalWrite(SW_MYSTERY, LOW);
+  delay(1);
   digitalWrite(SW_MIRROR_DOWN, HIGH);
-
-  digitalWrite(BTN_SHUTTER, LOW);
-  digitalWrite(BTN_PRERELEASE, LOW);
 
   digitalWrite(13, LOW); //LED off
 
@@ -138,14 +140,14 @@ void setup() {
   }
 
   pinMode(BTN_SHUTTER, OUTPUT);
-  pinMode(BTN_PRERELEASE, OUTPUT);
+  pinMode(SW_MYSTERY, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
-  digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
-  digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
+  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
   digitalWrite(SW_MIRROR_DOWN, HIGH);
@@ -153,6 +155,8 @@ void setup() {
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
+  //debug mirror emulation disable
+  //digitalWrite(SW_MIRROR_DOWN, LOW);
 
   // delay to let the camera warm up
   delay(250);
@@ -161,7 +165,7 @@ void setup() {
     click(BTN_SET);
   }
   delay(30);
-  digitalWrite(BTN_PRERELEASE, HIGH);
+  digitalWrite(SW_MYSTERY, LOW);
 
 }
 
