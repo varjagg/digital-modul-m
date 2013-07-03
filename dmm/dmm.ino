@@ -33,6 +33,9 @@
 
 #define ISO_ADDR 0
 
+#define out_on(pin_no) digitalWrite(pin_no, LOW);
+#define out_off(pin_no) digitalWrite(pin_no, HIGH);
+
 int isopos;
 
 int buttons[4]={
@@ -93,31 +96,31 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
-  digitalWrite(BTN_PRERELEASE, HIGH); // activates camera cycle
-  delay(5);
-  digitalWrite(BTN_SHUTTER, HIGH);
+  out_on(BTN_PRERELEASE); // activates camera cycle
+  delay(15);
+  out_on(BTN_SHUTTER);
   delay(15); // minimum trigger time
 
-  digitalWrite(SW_MIRROR_DOWN, LOW);
+  out_off(SW_MIRROR_DOWN);
   delay(30);
-  digitalWrite(SW_MIRROR_UP, HIGH);
-  digitalWrite(BTN_SHUTTER, LOW);
+  out_on(SW_MIRROR_UP);
+  out_off(BTN_SHUTTER);
   delay(15);
-  digitalWrite(BTN_PRERELEASE, LOW);
+  out_off(BTN_PRERELEASE);
   //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   //Set mirror up and fire the 1st curtain
   delay(560); // Canon's shutter is set to 1/2 sec
   //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   delay(10);
-  digitalWrite(SW_MIRROR_UP, LOW);
+  out_off(SW_MIRROR_UP);
   delay(50);
-  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
-  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
-  digitalWrite(SW_MYSTERY, HIGH);
+  out_on(SW_SHUTTER_CURTAIN1);
+  out_on(SW_SHUTTER_CURTAIN2);
+  out_on(SW_MYSTERY);
   delay(40);
-  digitalWrite(SW_MYSTERY, LOW);
+  out_off(SW_MYSTERY);
   delay(1);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
+  out_on(SW_MIRROR_DOWN);
 
   digitalWrite(13, LOW); //LED off
 
@@ -144,6 +147,9 @@ void setup() {
     buttons_deb[i] = new Bounce(buttons[i], 200);
   }
 
+  out_on(SW_MYSTERY);
+  out_off(BTN_PRERELEASE);
+  out_off(BTN_SHUTTER);
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(SW_MYSTERY, OUTPUT);
@@ -152,12 +158,12 @@ void setup() {
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
-  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
-  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  out_on(SW_SHUTTER_CURTAIN1);
+  out_on(SW_SHUTTER_CURTAIN2);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
-  digitalWrite(SW_MIRROR_UP, LOW);
+  out_on(SW_MIRROR_DOWN);
+  out_on(SW_MIRROR_UP);
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
@@ -168,8 +174,6 @@ void setup() {
     click(BTN_SET);
   }
   delay(30);
-  digitalWrite(SW_MYSTERY, LOW);
-  digitalWrite(BTN_PRERELEASE, LOW);
 }
 
 void loop() {
