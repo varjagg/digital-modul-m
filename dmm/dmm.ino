@@ -96,31 +96,31 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
-  out_on(BTN_PRERELEASE); // activates camera cycle
-  delay(15);
-  out_on(BTN_SHUTTER);
-  delay(15); // minimum trigger time
+  out_on(BTN_PRERELEASE);
+  delay(100);
+  digitalWrite(BTN_SHUTTER, HIGH);
+  delay(25); // minimum trigger time
 
-  out_off(SW_MIRROR_DOWN);
-  delay(30);
-  out_on(SW_MIRROR_UP);
-  out_off(BTN_SHUTTER);
+  digitalWrite(SW_MIRROR_DOWN, LOW);
+  delay(60);
+  digitalWrite(SW_MIRROR_UP, HIGH);
+  digitalWrite(BTN_SHUTTER, LOW);
   delay(15);
   out_off(BTN_PRERELEASE);
   //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   //Set mirror up and fire the 1st curtain
-  delay(560); // Canon's shutter is set to 1/2 sec
+  delay(530); // Canon's shutter is set to 1/2 sec
   //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   delay(10);
-  out_off(SW_MIRROR_UP);
+  digitalWrite(SW_MIRROR_UP, LOW);
   delay(50);
-  out_on(SW_SHUTTER_CURTAIN1);
-  out_on(SW_SHUTTER_CURTAIN2);
-  out_on(SW_MYSTERY);
+  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  digitalWrite(SW_MYSTERY, HIGH);
   delay(40);
-  out_off(SW_MYSTERY);
-  delay(1);
-  out_on(SW_MIRROR_DOWN);
+  digitalWrite(SW_MYSTERY, LOW);
+  delay(100);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
 
   digitalWrite(13, LOW); //LED off
 
@@ -147,9 +147,7 @@ void setup() {
     buttons_deb[i] = new Bounce(buttons[i], 200);
   }
 
-  out_on(SW_MYSTERY);
   out_off(BTN_PRERELEASE);
-  out_off(BTN_SHUTTER);
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(SW_MYSTERY, OUTPUT);
@@ -158,14 +156,17 @@ void setup() {
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
-  out_on(SW_SHUTTER_CURTAIN1);
-  out_on(SW_SHUTTER_CURTAIN2);
+  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
+  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
-  out_on(SW_MIRROR_DOWN);
-  out_on(SW_MIRROR_UP);
+  digitalWrite(SW_MIRROR_DOWN, HIGH);
+  digitalWrite(SW_MIRROR_UP, LOW);
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
+
+  //debug mirror emulation disable
+  //digitalWrite(SW_MIRROR_DOWN, LOW);
 
   // delay to let the camera warm up
   delay(250);
@@ -174,14 +175,21 @@ void setup() {
     click(BTN_SET);
   }
   delay(30);
+  digitalWrite(SW_MYSTERY, LOW);
+  delay(3000); 
+  out_on(BTN_PRERELEASE);
 }
 
 void loop() {
   int i, iso_changed;
   
   // fire the shutter if necessary
-  if(digitalRead(IN_SHUTTER) == LOW)
+  if(digitalRead(IN_SHUTTER) == LOW) {
     shoot();
+    delay(500);
+    out_on(BTN_PRERELEASE);
+
+  }
 
   // detect ISO knob action
   iso_changed = 0;
