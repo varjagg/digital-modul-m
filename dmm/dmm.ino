@@ -98,13 +98,13 @@ void shoot() {
   digitalWrite(13, HIGH); //LED on
   out_on(BTN_PRERELEASE);
   delay(100);
-  digitalWrite(BTN_SHUTTER, HIGH);
+  out_on(BTN_SHUTTER);
   delay(25); // minimum trigger time
 
-  digitalWrite(SW_MIRROR_DOWN, LOW);
+  out_off(SW_MIRROR_DOWN);
   delay(60);
-  digitalWrite(SW_MIRROR_UP, HIGH);
-  digitalWrite(BTN_SHUTTER, LOW);
+  out_on(SW_MIRROR_UP);
+  out_off(BTN_SHUTTER);
   delay(15);
   out_off(BTN_PRERELEASE);
   //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
@@ -112,15 +112,15 @@ void shoot() {
   delay(530); // Canon's shutter is set to 1/2 sec
   //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
   delay(10);
-  digitalWrite(SW_MIRROR_UP, LOW);
+  out_off(SW_MIRROR_UP);
   delay(50);
-  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
-  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
-  digitalWrite(SW_MYSTERY, HIGH);
+  out_on(SW_SHUTTER_CURTAIN1);
+  out_on(SW_SHUTTER_CURTAIN2);
+  out_on(SW_MYSTERY);
   delay(40);
-  digitalWrite(SW_MYSTERY, LOW);
+  out_off(SW_MYSTERY);
   delay(100);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
+  out_on(SW_MIRROR_DOWN);
 
   digitalWrite(13, LOW); //LED off
 
@@ -156,12 +156,12 @@ void setup() {
   pinMode(BTN_DN, OUTPUT);
   pinMode(BTN_SET, OUTPUT);
 
-  digitalWrite(SW_SHUTTER_CURTAIN1, HIGH);
-  digitalWrite(SW_SHUTTER_CURTAIN2, HIGH);
+  out_on(SW_SHUTTER_CURTAIN1);
+  out_on(SW_SHUTTER_CURTAIN2);
   pinMode(SW_SHUTTER_CURTAIN1, OUTPUT);
   pinMode(SW_SHUTTER_CURTAIN2, OUTPUT);
-  digitalWrite(SW_MIRROR_DOWN, HIGH);
-  digitalWrite(SW_MIRROR_UP, LOW);
+  out_on(SW_MIRROR_DOWN);
+  out_off(SW_MIRROR_UP);
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
@@ -175,7 +175,7 @@ void setup() {
     click(BTN_SET);
   }
   delay(30);
-  digitalWrite(SW_MYSTERY, LOW);
+  out_off(SW_MYSTERY);
   delay(3000); 
   out_on(BTN_PRERELEASE);
 }
