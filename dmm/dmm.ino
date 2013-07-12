@@ -96,30 +96,32 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
-  out_on(BTN_PRERELEASE);
-  delay(100);
+  //out_on(BTN_PRERELEASE);
+  //delay(100);
   out_on(BTN_SHUTTER);
-  delay(25); // minimum trigger time
+  delay(30); // minimum trigger time
 
   out_off(SW_MIRROR_DOWN);
-  delay(60);
+  delay(32);
   out_on(SW_MIRROR_UP);
   out_off(BTN_SHUTTER);
-  delay(15);
+  delay(33);
+  out_off(SW_SHUTTER_CURTAIN1);
   out_off(BTN_PRERELEASE);
-  //digitalWrite(SW_SHUTTER_CURTAIN1, LOW);
   //Set mirror up and fire the 1st curtain
-  delay(530); // Canon's shutter is set to 1/2 sec
-  //digitalWrite(SW_SHUTTER_CURTAIN2, LOW);
-  delay(10);
+  delay(495); // Canon's shutter is set to 1/2 sec
+  out_off(SW_SHUTTER_CURTAIN2);
+  delay(35);
   out_off(SW_MIRROR_UP);
-  delay(50);
+  delay(33);
   out_on(SW_SHUTTER_CURTAIN1);
+  delay(5);
   out_on(SW_SHUTTER_CURTAIN2);
+  delay(28);
   out_on(SW_MYSTERY);
   delay(40);
   out_off(SW_MYSTERY);
-  delay(100);
+  delay(1);
   out_on(SW_MIRROR_DOWN);
 
   digitalWrite(13, LOW); //LED off
@@ -148,6 +150,7 @@ void setup() {
   }
 
   out_off(BTN_PRERELEASE);
+  out_off(BTN_SHUTTER);
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
   pinMode(SW_MYSTERY, OUTPUT);
