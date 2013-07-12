@@ -99,7 +99,7 @@ void shoot() {
   //out_on(BTN_PRERELEASE);
   //delay(100);
   out_on(BTN_SHUTTER);
-  delay(30); // minimum trigger time
+  delay(15); // minimum trigger time
 
   out_off(SW_MIRROR_DOWN);
   delay(32);
