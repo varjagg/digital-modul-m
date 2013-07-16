@@ -20,8 +20,8 @@
 // we drive the amputated 350D buttons from output pins
 #define BTN_ISO 8
 #define BTN_UP  8
-#define BTN_DN  9
-#define BTN_SET 10
+#define BTN_DN  10
+#define BTN_SET 9
 #define BTN_PLAY 11
 #define BTN_ZOOM_IN 12
 
