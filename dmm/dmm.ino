@@ -133,7 +133,7 @@ void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
 
-  EEPROM.write(ISO_ADDR, 0);
+  //EEPROM.write(ISO_ADDR, 0);
 
   isopos = EEPROM.read(ISO_ADDR);
 
@@ -146,13 +146,14 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 200);
+    buttons_deb[i] = new Bounce(buttons[i], 100);
   }
 
   out_off(BTN_PRERELEASE);
   out_off(BTN_SHUTTER);
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
+  out_off(SW_MYSTERY);
   pinMode(SW_MYSTERY, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
@@ -177,9 +178,7 @@ void setup() {
   for( i = 0; i < 6; i++) {
     click(BTN_SET);
   }
-  delay(30);
-  out_off(SW_MYSTERY);
-  delay(3000); 
+  delay(2000); 
   out_on(BTN_PRERELEASE);
 }
 
