@@ -39,7 +39,7 @@
 int isopos;
 
 int buttons[4]={
-  4, 5, 6, 7};
+  7, 6, 5, 4};
 Bounce *buttons_deb[4];
 
 Bounce button_fap = Bounce(IN_FAP, 15);
@@ -78,7 +78,7 @@ void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
 
-   for(int i = 0; i <=isopos; i++)
+   for(int i = 0; i <=isopos +1; i++)
     blink();
 
   dist = pos - isopos;
@@ -133,7 +133,7 @@ void setup() {
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
 
-  //EEPROM.write(ISO_ADDR, 0);
+  EEPROM.write(ISO_ADDR, 0);
 
   isopos = EEPROM.read(ISO_ADDR);
 
@@ -146,7 +146,7 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 100);
+    buttons_deb[i] = new Bounce(buttons[i], 32);
   }
 
   out_off(BTN_PRERELEASE);
@@ -183,7 +183,7 @@ void setup() {
 }
 
 void loop() {
-  int i, iso_changed;
+  int i;
   
   // fire the shutter if necessary
   if(digitalRead(IN_SHUTTER) == LOW) {
@@ -194,18 +194,21 @@ void loop() {
   }
 
   // detect ISO knob action
-  iso_changed = 0;
-  for(i = 0; i < 4; i++) {
-    if(buttons_deb[i]->update()) {
-       iso_changed = 1;
-       if(buttons_deb[i]->fallingEdge()) {
-        iso_seq(i);
-        break;
-       }
-    }
+//  if(buttons_deb[3]->update() && !buttons_deb[2]->fallingEdge())
+  //  iso_seq(4);
+  //else
+    for(i = 0; i < 4; i++) {
+      if(buttons_deb[i]->update()) {
+         if(buttons_deb[i]->fallingEdge()) {
+          iso_seq(i);
+          break;
+         }
+         else if(i == 3) {
+           iso_seq(4);
+           break;
+         }
+      }
   }
-  if(iso_changed && i == 4)
-     iso_seq(4);
      
   if(button_fap.update() && button_fap.fallingEdge()) {
     blink();
