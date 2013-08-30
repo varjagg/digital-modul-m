@@ -33,8 +33,8 @@
 
 #define ISO_ADDR 0
 
-#define out_on(pin_no) digitalWrite(pin_no, LOW);
-#define out_off(pin_no) digitalWrite(pin_no, HIGH);
+#define out_on(pin_no) digitalWrite(pin_no, HIGH);
+#define out_off(pin_no) digitalWrite(pin_no, LOW);
 
 int isopos;
 
