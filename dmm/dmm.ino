@@ -40,7 +40,7 @@ int isopos;
 
 int buttons[4]={
   7, 6, 5, 4};
-Bounce *buttons_deb[4];
+//Bounce *buttons_deb[4];
 
 Bounce button_fap = Bounce(IN_FAP, 15);
 
@@ -78,7 +78,7 @@ void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
 
-   for(int i = 0; i <=isopos +1; i++)
+   for(int i = 0; i <=pos + 1; i++)
     blink();
 
   dist = pos - isopos;
@@ -146,7 +146,7 @@ void setup() {
   // set up the inputs from ISO knob
   for(i = 0; i < 4; i++) {
     pinMode(buttons[i], INPUT_PULLUP);
-    buttons_deb[i] = new Bounce(buttons[i], 32);
+    //buttons_deb[i] = new Bounce(buttons[i], 32);
   }
 
   out_off(BTN_PRERELEASE);
@@ -182,8 +182,20 @@ void setup() {
   out_on(BTN_PRERELEASE);
 }
 
+int getRotaryPos() {
+  int i, pos = -1;
+  for(i = 7; i > 3; i--) {
+    if(digitalRead(i) == LOW)
+      pos = i - 4;
+  }
+  if (i < 0)
+    i = 4;
+  return pos;
+}
+
+
 void loop() {
-  int i;
+  int new_iso;
   
   // fire the shutter if necessary
   if(digitalRead(IN_SHUTTER) == LOW) {
@@ -193,25 +205,11 @@ void loop() {
 
   }
 
-  // detect ISO knob action
-//  if(buttons_deb[3]->update() && !buttons_deb[2]->fallingEdge())
-  //  iso_seq(4);
-  //else
-    for(i = 0; i < 4; i++) {
-      if(buttons_deb[i]->update()) {
-         if(buttons_deb[i]->fallingEdge()) {
-          iso_seq(i);
-          break;
-         }
-         else if(i == 3) {
-           iso_seq(4);
-           break;
-         }
-      }
-  }
-     
+  new_iso = getRotaryPos();
+  if ( new_iso != isopos )
+  
   if(button_fap.update() && button_fap.fallingEdge()) {
-    blink();
+    //blink();
     pixelpeep();
   }
 }
