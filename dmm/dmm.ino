@@ -207,7 +207,11 @@ void loop() {
 
   new_iso = getRotaryPos();
   if ( new_iso != isopos )
-  
+    if( new_iso == 4 && isopos != 3 )
+      delay(100);
+    else
+       iso_seq(new_iso);
+       
   if(button_fap.update() && button_fap.fallingEdge()) {
     //blink();
     pixelpeep();
