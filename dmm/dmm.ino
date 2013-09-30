@@ -73,13 +73,27 @@ void pixelpeep() {
   click(BTN_ZOOM_IN);
 }
 
+int getRotaryPos() {
+  int i, pos = 0
+  ;
+  for(i = 7; i > 3; i--) {
+    if(digitalRead(i) == LOW)
+      pos = i - 3;
+  }
+  if (i < 0)
+    i = 4;
+  
+  return pos;
+}
+
 // ISO selection button sequence
 void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
-
-   for(int i = 0; i <=pos + 1; i++)
-    blink();
+  Serial.print("Got ISO pos: ");
+  Serial.println(pos);
+  Serial.print("Stored postion was: ");
+  Serial.println(isopos);
 
   dist = pos - isopos;
   dir = (dist >= 0 ? 1 : -1);
@@ -88,7 +102,10 @@ void iso_seq(int pos) {
     click(dir > 0 ? BTN_DN : BTN_UP);
   }
   click(BTN_SET);
-
+  Serial.print("Wrote ISO pos: ");
+  Serial.println(isopos);
+  Serial.println("");
+  
   EEPROM.write(ISO_ADDR, isopos);
 }
 
@@ -180,19 +197,8 @@ void setup() {
   }
   delay(2000); 
   out_on(BTN_PRERELEASE);
+  Serial.begin(9600);
 }
-
-int getRotaryPos() {
-  int i, pos = -1;
-  for(i = 7; i > 3; i--) {
-    if(digitalRead(i) == LOW)
-      pos = i - 4;
-  }
-  if (i < 0)
-    i = 4;
-  return pos;
-}
-
 
 void loop() {
   int new_iso;
