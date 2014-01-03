@@ -197,7 +197,7 @@ void setup() {
   }
   delay(2000); 
   out_on(BTN_PRERELEASE);
-  Serial.begin(9600);
+  //Serial.begin(9600);
 }
 
 void loop() {
