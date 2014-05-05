@@ -24,12 +24,15 @@
 #define BTN_SET 9
 #define BTN_PLAY 11
 #define BTN_ZOOM_IN 12
+#define SW_CANON_PWR 12
 
 // we simulate the shutter curtain and mirror position sensors for the Canon
 #define SW_SHUTTER_CURTAIN1 A0
 #define SW_SHUTTER_CURTAIN2 A1
 #define SW_MIRROR_UP A2
 #define SW_MIRROR_DOWN A3
+
+#define SW_POWER A5
 
 #define ISO_ADDR 0
 
@@ -42,7 +45,7 @@ int buttons[4]={
   7, 6, 5, 4};
 //Bounce *buttons_deb[4];
 
-Bounce button_fap = Bounce(IN_FAP, 15);
+//Bounce button_fap = Bounce(IN_FAP, 15);
 
 // blink the led once
 void blink() {
@@ -90,10 +93,6 @@ int getRotaryPos() {
 void iso_seq(int pos) {
   int dist, dir;
   click(BTN_ISO);
-  Serial.print("Got ISO pos: ");
-  Serial.println(pos);
-  Serial.print("Stored postion was: ");
-  Serial.println(isopos);
 
   dist = pos - isopos;
   dir = (dist >= 0 ? 1 : -1);
@@ -102,9 +101,6 @@ void iso_seq(int pos) {
     click(dir > 0 ? BTN_DN : BTN_UP);
   }
   click(BTN_SET);
-  Serial.print("Wrote ISO pos: ");
-  Serial.println(isopos);
-  Serial.println("");
   
   EEPROM.write(ISO_ADDR, isopos);
 }
@@ -113,11 +109,8 @@ void iso_seq(int pos) {
 void shoot() {
 
   digitalWrite(13, HIGH); //LED on
-  //out_on(BTN_PRERELEASE);
-  //delay(100);
   out_on(BTN_SHUTTER);
   delay(15); // minimum trigger time
-
   out_off(SW_MIRROR_DOWN);
   delay(32);
   out_on(SW_MIRROR_UP);
@@ -154,6 +147,12 @@ void setup() {
 
   isopos = EEPROM.read(ISO_ADDR);
 
+  // camera circuit power
+  out_off(SW_CANON_PWR);
+  pinMode(SW_CANON_PWR, OUTPUT);
+  out_off(SW_POWER);
+  pinMode(SW_POWER, OUTPUT);
+
   // shutter release button
   pinMode(IN_SHUTTER, INPUT_PULLUP);
   
@@ -170,7 +169,6 @@ void setup() {
   out_off(BTN_SHUTTER);
   pinMode(BTN_SHUTTER, OUTPUT);
   pinMode(BTN_PRERELEASE, OUTPUT);
-  out_off(SW_MYSTERY);
   pinMode(SW_MYSTERY, OUTPUT);
   pinMode(BTN_ISO, OUTPUT);
   pinMode(BTN_UP, OUTPUT);
@@ -190,11 +188,14 @@ void setup() {
   //digitalWrite(SW_MIRROR_DOWN, LOW);
 
   // delay to let the camera warm up
+  out_on(SW_CANON_PWR);
+  out_on(SW_POWER);
   delay(250);
+  out_off(SW_MYSTERY);
   // press SET 6 times in case Canon's CMOS was reset
-  for( i = 0; i < 6; i++) {
-    click(BTN_SET);
-  }
+  //for( i = 0; i < 6; i++) {
+  //  click(BTN_SET);
+  //}
   delay(2000); 
   out_on(BTN_PRERELEASE);
   //Serial.begin(9600);
@@ -218,10 +219,10 @@ void loop() {
     else
        iso_seq(new_iso);
        
-  if(button_fap.update() && button_fap.fallingEdge()) {
+  //if(button_fap.update() && button_fap.fallingEdge()) {
     //blink();
-    pixelpeep();
-  }
+    //pixelpeep();
+  //}
 }
 
-
+  
