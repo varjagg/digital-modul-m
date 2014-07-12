@@ -108,17 +108,17 @@ void iso_seq(int pos) {
 // camera firing sequence
 void shoot() {
 
-  digitalWrite(13, HIGH); //LED on
   out_on(BTN_SHUTTER);
-  delay(15); // minimum trigger time
+  delay(8); // minimum trigger time
   out_off(SW_MIRROR_DOWN);
-  delay(32);
+  delay(24);
+  //Set mirror up and fire the 1st curtain
   out_on(SW_MIRROR_UP);
   out_off(BTN_SHUTTER);
   delay(33);
   out_off(SW_SHUTTER_CURTAIN1);
   out_off(BTN_PRERELEASE);
-  //Set mirror up and fire the 1st curtain
+  digitalWrite(13, HIGH); //LED on
   delay(495); // Canon's shutter is set to 1/2 sec
   out_off(SW_SHUTTER_CURTAIN2);
   delay(35);
@@ -147,15 +147,15 @@ void setup() {
 
   isopos = EEPROM.read(ISO_ADDR);
 
+  // shutter release button
+  pinMode(IN_SHUTTER, INPUT_PULLUP);
+
   // camera circuit power
   out_off(SW_CANON_PWR);
   pinMode(SW_CANON_PWR, OUTPUT);
   out_off(SW_POWER);
   pinMode(SW_POWER, OUTPUT);
 
-  // shutter release button
-  pinMode(IN_SHUTTER, INPUT_PULLUP);
-  
   // fap button
   pinMode(IN_FAP, INPUT_PULLUP);
   
