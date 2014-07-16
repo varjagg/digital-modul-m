@@ -1,0 +1,11 @@
+Bill Of Materials
+
+1. Canon 350d/Rebel XTi camera body         1pcs
+2. ULN2003A                                 2pcs
+3. Arduino Mini Pro 3.3V                    1pcs
+4. PC Sync Cable                            1pcs
+5. Omron G5V-1 Relay                        1pcs
+6. Sheet Steel, 0.5mm                       1pcs
+7. Leica Winder                             1pcs
+8. Sugru, 8g Black                          1pk
+9. Leica Camera Removable Back              1pcs
