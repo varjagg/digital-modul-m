@@ -184,21 +184,14 @@ void setup() {
   pinMode(SW_MIRROR_UP, OUTPUT);
   pinMode(SW_MIRROR_DOWN, OUTPUT);
 
-  //debug mirror emulation disable
-  //digitalWrite(SW_MIRROR_DOWN, LOW);
-
   // delay to let the camera warm up
   out_on(SW_CANON_PWR);
   out_on(SW_POWER);
   delay(250);
   out_off(SW_MYSTERY);
-  // press SET 6 times in case Canon's CMOS was reset
-  //for( i = 0; i < 6; i++) {
-  //  click(BTN_SET);
-  //}
+
   delay(2000); 
   out_on(BTN_PRERELEASE);
-  //Serial.begin(9600);
 }
 
 void loop() {
@@ -219,10 +212,6 @@ void loop() {
     else
        iso_seq(new_iso);
        
-  //if(button_fap.update() && button_fap.fallingEdge()) {
-    //blink();
-    //pixelpeep();
-  //}
 }
 
   
